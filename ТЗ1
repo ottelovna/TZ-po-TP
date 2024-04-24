@@ -2,12 +2,22 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-if [ ! -d "$1" ]; then
+input_dir="$1"
+output_dir="$2"
+
+if [ ! -d "$input_dir" ]; then
     exit 1
 fi
 
-if [ ! -d "$2" ]; then
-    mkdir -p "$2"
-fi
+mkdir -p "$output_dir"
 
-find "$1" -type f -exec cp {} "$2" \;
+find "$input_dir" -type f | while read file; do
+    filename=$(basename "$file")
+    
+    if [ -e "$output_dir/$filename" ]; then
+        new_filename="${filename%.*}_$(date +%s).${filename##*.}" 
+        cp "$file" "$output_dir/$new_filename"
+    else
+        cp "$file" "$output_dir/$filename"
+    fi
+done
