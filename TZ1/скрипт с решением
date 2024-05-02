@@ -1,21 +1,28 @@
-if [ "$#" -ne 2 ]; then
+#!/bin/bash
+
+# Проверяем количество переданных аргументов
+if [[ "$#" -ne 2 ]]; then
     exit 1
 fi
 
 input_dir="$1"
 output_dir="$2"
 
-if [ ! -d "$input_dir" ]; then
+# Проверяем существование входной директории
+if [[ ! -d "$input_dir" ]]; then
     exit 1
 fi
 
+# Создаем выходную директорию, если она не существует
 mkdir -p "$output_dir"
 
+# Используем find для поиска всех файлов во входной директории и ее поддиректориях
 find "$input_dir" -type f | while read file; do
     filename=$(basename "$file")
-    
-    if [ -e "$output_dir/$filename" ]; then
-        new_filename="${filename%.*}_$(date +%s).${filename##*.}" 
+
+    # Проверяем, существует ли файл с таким же именем в выходной директории
+    if [[ -e "$output_dir/$filename" ]]; then
+        new_filename="${filename%.*}_$(date +%s).${filename##*.}" # Переименовываем файл, добавляя к нему timestamp
         cp "$file" "$output_dir/$new_filename"
     else
         cp "$file" "$output_dir/$filename"
